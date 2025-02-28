@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Quiz</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        .quiz-setup {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .topic-selector {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: block;
+            width: 100%;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .quiz-container {
+            display: none;
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+        }
+        
+        .question {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .options {
+            list-style-type: none;
+        }
+        
+        .option {
+            background-color: var(--light-color);
+            margin-bottom: 8px;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .option:hover {
+            background-color: #d1d8e0;
+        }
+        
+        .option.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .submit-quiz {
+            margin-top: 20px;
+        }
+        
+        .progress-tracker {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--success-color);
+            border-radius: 10px;
+            width: 0;
+            transition: width 0.5s ease;
+        }
+        
+        .results {
+            display: none;
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .result-summary {
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .result-details {
+            margin-bottom: 20px;
+        }
+        
+        .try-again {
+            margin-top: 20px;
+        }
+        
+        .correct {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .incorrect {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .questions-answered {
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .quiz-setup, .quiz-container, .results {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Physics Quiz</h1>
+            <p>Test your knowledge across all major physics topics</p>
+        </header>
+        
+        <div class="quiz-setup">
+            <h2>Choose Your Topic</h2>
+            <p>Select a physics topic from the dropdown below to begin your quiz.</p>
+            
+            <div class="topic-selector">
+                <label for="topic">Physics Topic:</label>
+                <select id="topic">
+                    <option value="" disabled selected>Select a topic</option>
+                    <option value="mechanics">Mechanics</option>
+                    <option value="electromagnetism">Electromagnetism</option>
+                    <option value="thermodynamics">Thermodynamics</option>
+                    <option value="quantum">Quantum Physics</option>
+                    <option value="optics">Optics</option>
+                    <option value="relativity">Relativity</option>
+                    <option value="waves">Waves & Oscillations</option>
+                    <option value="nuclear">Nuclear Physics</option>
+                    <option value="fluid">Fluid Mechanics</option>
+                    <option value="astrophysics">Astrophysics</option>
+                </select>
+            </div>
+            
+            <button id="start-quiz">Start Quiz</button>
+        </div>
+        
+        <div id="quiz-container" class="quiz-container">
+            <h2 id="quiz-topic">Quiz in Progress</h2>
+            
+            <div class="progress-tracker">
+                <p>Progress: <span class="questions-answered">0</span>/10</p>
+                <p>Correct: <span id="correct-count">0</span></p>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+            
+            <div id="question-container" class="question-container">
+                <p class="question" id="question-text"></p>
+                <ul class="options" id="options-list"></ul>
+            </div>
+            
+            <button id="next-question" class="submit-quiz">Next Question</button>
+            <button id="submit-quiz" class="submit-quiz" style="display: none;">Submit Quiz</button>
+        </div>
+        
+        <div id="results" class="results">
+            <h2>Quiz Results</h2>
+            <p class="result-summary">You scored: <span id="score">0</span> out of 10</p>
+            <div class="result-details">
+                <p>Topic: <span id="result-topic"></span></p>
+                <p id="performance-message"></p>
+            </div>
+            <button id="try-again" class="try-again">Try Another Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        // Question banks for each topic
+        const questionBanks = {
+            mechanics: [],
+            electromagnetism: [],
+            thermodynamics: [],
+            quantum: [],
+            optics: [],
+            relativity: [],
+            waves: [],
+            nuclear: [],
+            fluid: [],
+            astrophysics: []
+        };
+        
+        // Sample questions for testing (will be replaced with your manual additions later)
+        // Adding 3 sample questions per topic for demonstration purposes
+        
+        // Mechanics sample questions
+        questionBanks.mechanics = [
+            {
+                question: "What is Newton's First Law of Motion?",
+                options: [
+                    "An object at rest stays at rest and an object in motion stays in motion unless acted upon by an external force.",
+                    "Force equals mass times acceleration.",
+                    "For every action, there is an equal and opposite reaction.",
+                    "Energy can neither be created nor destroyed."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "The SI unit of force is:",
+                options: [
+                    "Watt",
+                    "Joule",
+                    "Newton",
+                    "Pascal"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Which of the following is a vector quantity?",
+                options: [
+                    "Mass",
+                    "Temperature",
+                    "Time",
+                    "Velocity"
+                ],
+                correctAnswer: 3
+            }
+        ];
+        
+        // Electromagnetism sample questions
+        questionBanks.electromagnetism = [
+            {
+                question: "Coulomb's Law describes the force between:",
+                options: [
+                    "Magnetic poles",
+                    "Electric charges",
+                    "Gravitational masses",
+                    "Electromagnetic waves"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Which of the following is NOT a source of a magnetic field?",
+                options: [
+                    "Moving electric charges",
+                    "Stationary electric charges",
+                    "Permanent magnets",
+                    "Electric current in a wire"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Faraday's Law of Electromagnetic Induction relates to:",
+                options: [
+                    "The relationship between electric charge and electric field",
+                    "The relationship between electric current and magnetic field",
+                    "The production of an electromotive force due to changing magnetic flux",
+                    "The force between two electric charges"
+                ],
+                correctAnswer: 2
+            }
+        ];
+        
+        // Thermodynamics sample questions
+        questionBanks.thermodynamics = [
+            {
+                question: "The First Law of Thermodynamics is essentially a statement of:",
+                options: [
+                    "Conservation of momentum",
+                    "Conservation of energy",
+                    "Conservation of mass",
+                    "Conservation of charge"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Entropy is a measure of:",
+                options: [
+                    "Energy in a system",
+                    "Temperature in a system",
+                    "Disorder in a system",
+                    "Pressure in a system"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "In an adiabatic process:",
+                options: [
+                    "Temperature remains constant",
+                    "Pressure remains constant",
+                    "Volume remains constant",
+                    "No heat is transferred"
+                ],
+                correctAnswer: 3
+            }
+        ];
+        
+        // Initialize global variables
+        let currentQuiz = [];
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let selectedTopic = "";
+        
+        // DOM elements
+        const topicSelect = document.getElementById("topic");
+        const startQuizBtn = document.getElementById("start-quiz");
+        const quizContainer = document.getElementById("quiz-container");
+        const quizSetup = document.querySelector(".quiz-setup");
+        const quizTopic = document.getElementById("quiz-topic");
+        const questionText = document.getElementById("question-text");
+        const optionsList = document.getElementById("options-list");
+        const nextQuestionBtn = document.getElementById("next-question");
+        const submitQuizBtn = document.getElementById("submit-quiz");
+        const resultsContainer = document.getElementById("results");
+        const scoreDisplay = document.getElementById("score");
+        const resultTopic = document.getElementById("result-topic");
+        const performanceMessage = document.getElementById("performance-message");
+        const tryAgainBtn = document.getElementById("try-again");
+        const questionsAnswered = document.querySelector(".questions-answered");
+        const correctCount = document.getElementById("correct-count");
+        const progressFill = document.querySelector(".progress-fill");
+        
+        // Event listeners
+        startQuizBtn.addEventListener("click", startQuiz);
+        nextQuestionBtn.addEventListener("click", moveToNextQuestion);
+        submitQuizBtn.addEventListener("click", submitQuiz);
+        tryAgainBtn.addEventListener("click", resetQuiz);
+        
+        // Function to start the quiz
+        function startQuiz() {
+            selectedTopic = topicSelect.value;
+            
+            if (!selectedTopic) {
+                alert("Please select a topic to start the quiz.");
+                return;
+            }
+            
+            // Generate 10 random questions
+            generateRandomQuestions();
+            
+            // Hide setup, show quiz
+            quizSetup.style.display = "none";
+            quizContainer.style.display = "block";
+            
+            // Set the quiz topic
+            const topicName = topicSelect.options[topicSelect.selectedIndex].text;
+            quizTopic.textContent = topicName + " Quiz";
+            
+            // Reset variables
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            questionsAnswered.textContent = "0";
+            correctCount.textContent = "0";
+            progressFill.style.width = "0%";
+            
+            // Display the first question
+            displayQuestion();
+        }
+        
+        // Function to generate random questions for the quiz
+        function generateRandomQuestions() {
+            // Get the question bank for the selected topic
+            const topicQuestions = questionBanks[selectedTopic];
+            
+            // If there are fewer than 10 questions, use all of them
+            if (topicQuestions.length <= 10) {
+                currentQuiz = [...topicQuestions];
+                return;
+            }
+            
+            // Otherwise, randomly select 10 questions
+            currentQuiz = [];
+            const availableQuestions = [...topicQuestions];
+            
+            for (let i = 0; i < 10; i++) {
+                if (availableQuestions.length === 0) break;
+                
+                const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+                currentQuiz.push(availableQuestions[randomIndex]);
+                availableQuestions.splice(randomIndex, 1);
+            }
+        }
+        
+        // Function to display the current question
+        function displayQuestion() {
+            const currentQuestion = currentQuiz[currentQuestionIndex];
+            
+            questionText.textContent = `Question ${currentQuestionIndex + 1}: ${currentQuestion.question}`;
+            
+            // Clear existing options
+            optionsList.innerHTML = "";
+            
+            // Add options
+            currentQuestion.options.forEach((option, index) => {
+                const li = document.createElement("li");
+                li.classList.add("option");
+                li.setAttribute("data-index", index);
+                li.textContent = option;
+                li.addEventListener("click", selectOption);
+                optionsList.appendChild(li);
+            });
+            
+            // Show next question button for questions 1-9
+            // Show submit quiz button for the last question
+            if (currentQuestionIndex === 9) {
+                nextQuestionBtn.style.display = "none";
+                submitQuizBtn.style.display = "block";
+            } else {
+                nextQuestionBtn.style.display = "block";
+                submitQuizBtn.style.display = "none";
+            }
+        }
+        
+        // Function to handle option selection
+        function selectOption(e) {
+            // Remove selected class from all options
+            const options = optionsList.querySelectorAll(".option");
+            options.forEach(option => option.classList.remove("selected"));
+            
+            // Add selected class to clicked option
+            e.target.classList.add("selected");
+        }
+        
+        // Function to move to the next question
+        function moveToNextQuestion() {
+            // Check if an option is selected
+            const selectedOption = optionsList.querySelector(".selected");
+            if (!selectedOption) {
+                alert("Please select an answer before proceeding.");
+                return;
+            }
+            
+            // Check if the answer is correct
+            const selectedIndex = parseInt(selectedOption.getAttribute("data-index"));
+            if (selectedIndex === currentQuiz[currentQuestionIndex].correctAnswer) {
+                correctAnswers++;
+                correctCount.textContent = correctAnswers;
+            }
+            
+            // Update progress
+            currentQuestionIndex++;
+            questionsAnswered.textContent = currentQuestionIndex;
+            progressFill.style.width = `${(currentQuestionIndex / 10) * 100}%`;
+            
+            // Display the next question
+            displayQuestion();
+        }
+        
+        // Function to submit the quiz
+        function submitQuiz() {
+            // Check if an option is selected for the last question
+            const selectedOption = optionsList.querySelector(".selected");
+            if (!selectedOption) {
+                alert("Please select an answer before submitting.");
+                return;
+            }
+            
+            // Check if the answer is correct
+            const selectedIndex = parseInt(selectedOption.getAttribute("data-index"));
+            if (selectedIndex === currentQuiz[currentQuestionIndex].correctAnswer) {
+                correctAnswers++;
+            }
+            
+            // Update progress
+            questionsAnswered.textContent = "10";
+            progressFill.style.width = "100%";
+            correctCount.textContent = correctAnswers;
+            
+            // Show results
+            quizContainer.style.display = "none";
+            resultsContainer.style.display = "block";
+            
+            // Display score
+            scoreDisplay.textContent = correctAnswers;
+            resultTopic.textContent = topicSelect.options[topicSelect.selectedIndex].text;
+            
+            // Display performance message
+            if (correctAnswers >= 8) {
+                performanceMessage.textContent = "Excellent work! You have a strong understanding of this topic.";
+            } else if (correctAnswers >= 6) {
+                performanceMessage.textContent = "Good job! You have a solid grasp of the basics.";
+            } else if (correctAnswers >= 4) {
+                performanceMessage.textContent = "Not bad. With a little more study, you'll improve your knowledge.";
+            } else {
+                performanceMessage.textContent = "You might need to review this topic more thoroughly.";
+            }
+        }
+        
+        // Function to reset the quiz
+        function resetQuiz() {
+            resultsContainer.style.display = "none";
+            quizSetup.style.display = "block";
+            topicSelect.value = "";
+        }
+        
+        // Sample questions for remaining topics
+        questionBanks.quantum = [
+            {
+                question: "The Schrödinger equation describes:",
+                options: [
+                    "The path of particles in a magnetic field",
+                    "The wave function of a quantum mechanical system",
+                    "The relationship between mass and energy",
+                    "The interactions between elementary particles"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "Heisenberg's Uncertainty Principle states that:",
+                options: [
+                    "Energy can be created or destroyed in quantum systems",
+                    "Light behaves as both a particle and a wave",
+                    "The position and momentum of a particle cannot be simultaneously measured with arbitrary precision",
+                    "Quantum systems exist in multiple states until observed"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Which physicist proposed the wave nature of matter?",
+                options: [
+                    "Albert Einstein",
+                    "Niels Bohr",
+                    "Max Planck",
+                    "Louis de Broglie"
+                ],
+                correctAnswer: 3
+            }
+        ];
+        
+        questionBanks.optics = [
+            {
+                question: "When light passes from air into glass, it:",
+                options: [
+                    "Speeds up",
+                    "Slows down",
+                    "Maintains the same speed",
+                    "Stops completely"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "The phenomenon of diffraction is best explained by:",
+                options: [
+                    "Particle theory of light",
+                    "Quantum theory",
+                    "Wave theory of light",
+                    "Electromagnetic theory"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "A convex lens produces:",
+                options: [
+                    "Only virtual images",
+                    "Only real images",
+                    "Either real or virtual images depending on object distance",
+                    "Neither real nor virtual images"
+                ],
+                correctAnswer: 2
+            }
+        ];
+        
+        questionBanks.relativity = [
+            {
+                question: "Einstein's Special Theory of Relativity states that:",
+                options: [
+                    "The laws of physics are the same for all inertial reference frames",
+                    "Time flows at the same rate for all observers",
+                    "The speed of light depends on the observer's motion",
+                    "Mass is constant regardless of velocity"
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "The famous equation E=mc² relates:",
+                options: [
+                    "Energy and momentum",
+                    "Energy and mass",
+                    "Mass and acceleration",
+                    "Energy and time"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "According to General Relativity, gravity is:",
+                options: [
+                    "A fundamental force",
+                    "A particle called the graviton",
+                    "A result of the curvature of spacetime",
+                    "An electromagnetic phenomenon"
+                ],
+                correctAnswer: 2
+            }
+        ];
+        
+        questionBanks.waves = [
+            {
+                question: "The Doppler Effect describes:",
+                options: [
+                    "The reflection of waves from a boundary",
+                    "The bending of waves around obstacles",
+                    "The change in frequency of a wave for an observer moving relative to the source",
+                    "The interference pattern created by two coherent sources"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "When two waves interfere constructively, the resulting amplitude is:",
+                options: [
+                    "The product of the individual amplitudes",
+                    "The sum of the individual amplitudes",
+                    "The difference of the individual amplitudes",
+                    "The square root of the sum of the squares of the individual amplitudes"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "The period of a simple pendulum depends on:",
+                options: [
+                    "The mass of the pendulum bob",
+                    "The initial displacement",
+                    "The length of the pendulum",
+                    "All of the above"
+                ],
+                correctAnswer: 2
+            }
+        ];
+        
+        questionBanks.nuclear = [
+            {
+                question: "Nuclear fission involves:",
+                options: [
+                    "The splitting of a heavy nucleus into lighter nuclei",
+                    "The combination of light nuclei to form a heavier nucleus",
+                    "The emission of an electron from a nucleus",
+                    "The capture of an electron by a nucleus"
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "The strong nuclear force acts between:",
+                options: [
+                    "Electrons",
+                    "Protons and electrons",
+                    "Nucleons (protons and neutrons)",
+                    "Atoms"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Half-life is:",
+                options: [
+                    "The time it takes for half of a radioactive sample to decay",
+                    "The time it takes for a radioactive sample to lose half its energy",
+                    "The distance a radioactive particle can travel in air",
+                    "The maximum energy of radiation emitted by a sample"
+                ],
+                correctAnswer: 0
+            }
+        ];
+        
+        questionBanks.fluid = [
+            {
+                question: "Bernoulli's principle states that as the speed of a fluid increases:",
+                options: [
+                    "Its pressure increases",
+                    "Its pressure decreases",
+                    "Its temperature increases",
+                    "Its density increases"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "The buoyant force on an object in a fluid is equal to:",
+                options: [
+                    "The weight of the object",
+                    "The weight of fluid displaced by the object",
+                    "The volume of the object times the density of the fluid",
+                    "Both B and C"
+                ],
+                correctAnswer: 3
+            },
+            {
+                question: "Viscosity is a measure of a fluid's:",
+                options: [
+                    "Density",
+                    "Pressure",
+                    "Resistance to flow",
+                    "Compressibility"
+                ],
+                correctAnswer: 2
+            }
+        ];
+        
+        questionBanks.astrophysics = [
+            {
+                question: "Black holes are formed from:",
+                options: [
+                    "The collision of two neutron stars",
+                    "The collapse of very massive stars",
+                    "The expansion of white dwarfs",
+                    "The compression of dark matter"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "The redshift of distant galaxies provides evidence for:",
+                options: [
+                    "The Big Bang theory",
+                    "The expansion of the universe",
+                    "The existence of dark matter",
+                    "The presence of black holes"
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "What is the main source of energy in main sequence stars like our Sun?",
+                options: [
+                    "Gravitational contraction",
+                    "Nuclear fission",
+                    "Nuclear fusion",
+                    "Chemical reactions"
+                ],
+                correctAnswer: 2
+            }
+        ];
+    </script>
+</body>
+</html>
